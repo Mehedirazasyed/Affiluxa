@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AFFILUXA — Verify Certificate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{--accent1:#ff7a18;--accent2:#ff9f43;--bg:#070707;}
+    body{background:radial-gradient(1200px 600px at 8% 10%, rgba(255,122,24,0.06), transparent 6%), var(--bg); color:#e6eef6;}
+    .glass{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); backdrop-filter:blur(8px)}
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="max-w-xl w-full glass p-6 rounded-2xl shadow-lg">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h1 class="text-2xl font-bold">Verify Certificate — AFFILUXA</h1>
+        <p class="text-sm text-gray-300">Checks certificates.json from your GitHub Pages (or upload a local file)</p>
+      </div>
+      <div class="text-xs text-gray-400">Repo: mehedirazasyed/Affiluxa</div>
+    </div>
+
+    <form id="verifyForm" class="space-y-3">
+      <div>
+        <label class="text-sm text-gray-300">Certificate No (e.g. AFFILUXA-0001)</label>
+        <input id="q" required class="w-full mt-1 px-3 py-2 rounded bg-transparent border border-[rgba(255,255,255,0.04)]" />
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 bg-[var(--accent1)] text-black font-semibold py-2 rounded">Verify</button>
+        <button id="fetchRemote" type="button" class="px-4 py-2 rounded border border-[rgba(255,255,255,0.06)]">Load from GitHub</button>
+      </div>
+    </form>
+
+    <div id="status" class="mt-3 text-sm text-gray-300">Data source: <span id="source">none</span></div>
+
+    <div id="result" class="mt-4 hidden p-4 rounded bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)]">
+      <div class="text-green-400 font-semibold">✅ Valid certificate</div>
+      <div id="details" class="mt-2 text-sm text-gray-200"></div>
+    </div>
+
+    <div id="notfound" class="mt-4 hidden text-red-400 font-semibold">❌ Certificate not found</div>
+
+    <hr class="my-4 border-[rgba(255,255,255,0.03)]"/>
+
+    <div class="text-sm text-gray-300 mb-2">Fallback: Upload a local `certificates.json` (use this if you haven't uploaded to GitHub yet)</div>
+    <input id="fileInput" type="file" accept=".json" class="block w-full text-sm text-gray-200 mb-3" />
+    <div id="localPreview" class="text-xs text-gray-400"></div>
+  </div>
+
+  <script>
+    const GITHUB_JSON = 'https://mehedirazasyed.github.io/Affiluxa/certificates.json';
+    let data = null; // will hold array of records
+    const sourceEl = document.getElementById('source');
+    const statusEl = document.getElementById('status');
+
+    async function loadFromGithub(){
+      sourceEl.textContent = 'loading...';
+      try{
+        const res = await fetch(GITHUB_JSON + '?t=' + Date.now());
+        if(!res.ok) throw new Error('Not found on GitHub');
+        data = await res.json();
+        sourceEl.textContent = 'GitHub (Affiluxa repo)';
+        statusEl.classList.remove('text-red-400');
+        statusEl.classList.add('text-gray-300');
+        document.getElementById('localPreview').textContent = `Loaded ${data.length} records from GitHub.`;
+        return true;
+      }catch(err){
+        data = null;
+        sourceEl.textContent = 'failed';
+        statusEl.classList.remove('text-gray-300');
+        statusEl.classList.add('text-red-400');
+        document.getElementById('localPreview').textContent = `Could not fetch GitHub file. You can upload a local certificates.json instead.`;
+        return false;
+      }
+    }
+
+    document.getElementById('fetchRemote').addEventListener('click', loadFromGithub);
+
+    document.getElementById('verifyForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const q = document.getElementById('q').value.trim();
+      if(!q) return;
+      // ensure data loaded: try GitHub first if not loaded
+      if(!data){
+        await loadFromGithub();
+      }
+      // if still not loaded, try localStorage (if admin used the admission page on same browser)
+      if(!data){
+        try{
+          data = JSON.parse(localStorage.getItem('affiluxa_students') || '[]');
+          if(data && data.length) sourceEl.textContent = 'localStorage';
+        }catch(e){}
+      }
+
+      if(!data || !data.length){
+        // nothing to search
+        document.getElementById('notfound').classList.remove('hidden');
+        document.getElementById('result').classList.add('hidden');
+        return;
+      }
+
+      const rec = data.find(r => (r.certificateNo||'').toLowerCase() === q.toLowerCase());
+      if(rec){
+        document.getElementById('notfound').classList.add('hidden');
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('details').innerHTML = `
+          <strong>Name:</strong> ${rec.name} <br/>
+          <strong>Course:</strong> ${rec.course} <br/>
+          <strong>Email:</strong> ${rec.email} <br/>
+          <strong>Phone:</strong> ${rec.phone || '—'} <br/>
+          <strong>Date:</strong> ${rec.date} <br/>
+          <strong>Certificate:</strong> ${rec.certificateNo}
+        `;
+      } else {
+        document.getElementById('notfound').classList.remove('hidden');
+        document.getElementById('result').classList.add('hidden');
+      }
+    });
+
+    // Local file upload fallback
+    document.getElementById('fileInput').addEventListener('change', function(e){
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try{
+          const parsed = JSON.parse(ev.target.result);
+          if(!Array.isArray(parsed)) throw new Error('Invalid JSON format - expected an array');
+          data = parsed;
+          sourceEl.textContent = 'uploaded file';
+          document.getElementById('localPreview').textContent = `Loaded ${data.length} records from uploaded file.`;
+          statusEl.classList.remove('text-red-400');
+          statusEl.classList.add('text-gray-300');
+        }catch(err){
+          data = null;
+          sourceEl.textContent = 'upload failed';
+          document.getElementById('localPreview').textContent = 'File parse error: ' + err.message;
+        }
+      };
+      reader.readAsText(f);
+    });
+
+    // Attempt an initial GitHub load (non-blocking)
+    loadFromGithub();
+  </script>
+</body>
+</html>
