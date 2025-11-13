@@ -1,0 +1,403 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AFFILUXA — Telecom Training</title>
+  <meta name="description" content="AFFILUXA — International-grade telecom training in Optical Fibre Splicing. Futuristic, hands-on, industry-recognized courses." />  <!-- Google Fonts -->  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Rubik:wght@500;700&display=swap" rel="stylesheet">  <!-- Tailwind (CDN) configured for JIT-like utilities -->  <script src="https://cdn.tailwindcss.com"></script>  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              900: '#0b0b0b',
+              800: '#0f0f10',
+              700: '#141414',
+              orange: '#ff7a18',
+              amber: '#ff9f43'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Rubik', 'Inter']
+          }
+        }
+      }
+    }
+  </script>  <style>
+    :root{
+      --bg:#070707;
+      --card:#0f1114;
+      --muted: #9aa4af;
+      --accent1: #ff7a18; /* primary orange */
+      --accent2: #ff9f43; /* secondary amber */
+    }
+    html,body{height:100%;}
+    body{
+      background: radial-gradient(1200px 600px at 8% 10%, rgba(255,122,24,0.06), transparent 6%),
+                  radial-gradient(1000px 500px at 95% 85%, rgba(255,159,67,0.04), transparent 6%),
+                  var(--bg);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* subtle glassy card */
+    .glass{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px) saturate(120%);
+    }
+
+    /* glowing accent for headings */
+    .glow{
+      text-shadow: 0 6px 30px rgba(255,122,24,0.08);
+    }
+
+    /* animated gradient underline */
+    .g-underline{
+      display:inline-block; padding-bottom:4px; position:relative;
+    }
+    .g-underline::after{
+      content:''; position:absolute; left:0; right:0; bottom:0; height:6px; border-radius:999px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      filter: blur(6px); opacity:0.85; transform:translateY(6px);
+    }
+
+    /* hero animated waves */
+    .wave-bg{
+      position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+    }
+    .wave{
+      position:absolute; width:160%; height:160%; left:-30%; top:-40%; transform:rotate(12deg);
+      background: radial-gradient(circle at 20% 20%, rgba(255,122,24,0.06), transparent 6%),
+                  radial-gradient(circle at 80% 80%, rgba(255,159,67,0.04), transparent 6%);
+      animation: floaty 14s ease-in-out infinite;
+    }
+    .wave.wave-2{ transform:rotate(-8deg); animation-duration:18s; opacity:0.9 }
+    @keyframes floaty{
+      0%{transform:translateY(-6%) rotate(8deg)}
+      50%{transform:translateY(6%) rotate(-8deg)}
+      100%{transform:translateY(-6%) rotate(8deg)}
+    }
+
+    /* particles canvas fallback */
+    .particle-canvas{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+
+    /* modern logo */
+    .logo-mark{ display:inline-grid; place-items:center; width:44px; height:44px; border-radius:10px; background:linear-gradient(135deg,var(--accent1),var(--accent2)); box-shadow:0 6px 20px rgba(255,122,24,0.12); }
+
+    /* small screens adjustments */
+    @media (max-width:640px){ .g-underline::after{display:none} }
+  </style></head>
+<body class="antialiased">  <!-- Decorative animated background (waves + canvas for particles) -->  <div class="wave-bg" aria-hidden="true">
+    <div class="wave"></div>
+    <div class="wave wave-2"></div>
+    <canvas id="particles" class="particle-canvas"></canvas>
+  </div>  <!-- Page container -->  <div class="relative z-10 min-h-screen flex flex-col"><!-- NAV -->
+<header class="w-full glass backdrop-blur-md py-4">
+  <div class="container mx-auto px-6 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-3">
+      <div class="logo-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+          <path d="M3 12C3 7.03 7.03 3 12 3s9 4.03 9 9-4.03 9-9 9S3 16.97 3 12z" fill="white" opacity="0.06"/>
+          <path d="M8.2 12.6c.5-1.8 2.2-3.1 4.1-3.1 1.9 0 3.6 1.3 4.1 3.1H8.2z" fill="white"/>
+        </svg>
+      </div>
+      <div>
+        <div class="text-white font-semibold leading-none">AFFILUXA</div>
+        <div class="text-[11px] text-gray-400 -mt-0.5">Telecom Training</div>
+      </div>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
+      <a class="hover:text-white transition" href="#about">About</a>
+      <a class="hover:text-white transition" href="#course">Course</a>
+      <a class="hover:text-white transition" href="#contact">Contact</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="admission.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[var(--accent1)] to-[var(--accent2)] shadow-lg text-black font-medium hover:scale-105 transform transition">Apply Now</a>
+      <button id="menuBtn" class="md:hidden p-2 rounded-md glass">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<main class="flex-1">
+  <section class="container mx-auto px-6 py-24 lg:py-32 relative">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+
+      <!-- Left: copy -->
+      <div class="lg:col-span-6 space-y-6 relative z-20">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight glow">
+          Master <span class="g-underline">Optical Fibre</span> <br class="hidden sm:block"/> Technology — <span class="text-[var(--accent1)]">Industry Ready</span>
+        </h1>
+
+        <p class="text-gray-300 max-w-2xl text-lg">
+          World-class, hands-on training in fiber splicing, OTDR testing and installation best-practices. Built for technicians who want to level up — quickly.
+        </p>
+
+        <div class="flex flex-wrap gap-4 items-center">
+          <a href="admission.html" class="inline-flex items-center gap-3 bg-[var(--accent1)] hover:brightness-105 px-6 py-3 rounded-full font-semibold text-black shadow-xl transition">
+            Get Certified →
+          </a>
+          <a href="verify.html" class="inline-flex items-center gap-3 text-[var(--accent2)] border border-[rgba(255,159,67,0.12)] px-5 py-3 rounded-full font-medium glass">Verify Certificate</a>
+          <a href="#contact" class="text-sm text-gray-400 ml-2">Or contact us directly</a>
+        </div>
+
+        <div class="mt-6 grid grid-cols-3 gap-4 max-w-md">
+          <div class="glass p-3 rounded-xl text-center">
+            <div class="text-[13px] text-gray-300">Duration</div>
+            <div class="font-semibold text-white">2–6 weeks</div>
+          </div>
+          <div class="glass p-3 rounded-xl text-center">
+            <div class="text-[13px] text-gray-300">Hands-on</div>
+            <div class="font-semibold text-white">100% practical</div>
+          </div>
+          <div class="glass p-3 rounded-xl text-center">
+            <div class="text-[13px] text-gray-300">Placement</div>
+            <div class="font-semibold text-white">Industry partners</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: showcase card -->
+      <div class="lg:col-span-6 relative z-20">
+        <div class="relative mx-auto max-w-xl">
+          <div class="glass rounded-3xl p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)] border border-[rgba(255,255,255,0.03)]">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-sm text-gray-300">Featured Course</div>
+                <h3 class="text-2xl font-bold mt-1">Optical Fibre Splicer — Professional</h3>
+                <p class="text-gray-400 mt-2 text-sm">Comprehensive curriculum with OTDR, fusion splicing and field-installation practice.</p>
+
+                <div class="mt-5 flex items-center gap-3">
+                  <div class="rounded-full bg-[rgba(255,122,24,0.12)] px-3 py-2 text-[var(--accent1)] text-sm font-semibold">Live Labs</div>
+                  <div class="rounded-full bg-[rgba(255,159,67,0.08)] px-3 py-2 text-[var(--accent2)] text-sm font-medium">Certificate</div>
+                </div>
+
+                <div class="mt-6 flex items-center gap-4">
+                  <a href="admission.html" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent1)] rounded-lg text-black font-semibold shadow">Enroll</a>
+                  <a href="#course" class="text-gray-300 text-sm">See syllabus →</a>
+                </div>
+              </div>
+
+              <div class="hidden md:block">
+                <!-- stylized device/3D-ish mockup -->
+                <div class="w-36 h-36 rounded-xl bg-gradient-to-br from-[rgba(255,122,24,0.12)] to-[rgba(255,159,67,0.08)] flex items-center justify-center">
+                  <svg width="110" height="110" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 7h16v10H4z" fill="rgba(255,255,255,0.03)"/>
+                    <path d="M8 11h8v2H8z" fill="white" opacity="0.9"/>
+                    <path d="M10 14h4v1h-4z" fill="rgba(255,255,255,0.6)"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-4">
+              <div class="p-4 rounded-lg bg-[rgba(255,255,255,0.02)]">
+                <div class="text-xs text-gray-400">Tools</div>
+                <div class="font-semibold">Fusion Splicer, OTDR</div>
+              </div>
+              <div class="p-4 rounded-lg bg-[rgba(255,255,255,0.02)]">
+                <div class="text-xs text-gray-400">Career</div>
+                <div class="font-semibold">Field Tech, Installer</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- floating badges -->
+          <div class="absolute -top-6 -right-6 w-32 h-32 rounded-2xl glass flex items-center justify-center text-center">
+            <div>
+              <div class="text-xs text-gray-300">Trusted By</div>
+              <div class="font-semibold mt-1">Airtel • Jio</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE -->
+  <section id="about" class="py-16 lg:py-24">
+    <div class="container mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-3xl sm:text-4xl font-bold">Why AFFILUXA?</h2>
+        <p class="text-gray-300 mt-3">Futuristic training, industry-vetted curriculum, and real-world labs — crafted for fast job-readiness.</p>
+      </div>
+
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass p-6 rounded-2xl">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-md bg-[rgba(255,122,24,0.12)] flex items-center justify-center">🔧</div>
+            <div>
+              <div class="text-sm text-gray-300">Hands-on</div>
+              <div class="font-semibold">Real equipment & labs</div>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm mt-4">Get comfortable with splicers, OTDRs and field installations under expert supervision.</p>
+        </div>
+        <div class="glass p-6 rounded-2xl">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-md bg-[rgba(255,159,67,0.1)] flex items-center justify-center">🏅</div>
+            <div>
+              <div class="text-sm text-gray-300">Certified</div>
+              <div class="font-semibold">Industry recognition</div>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm mt-4">Certificates designed to be recognized by telecom employers and contractors.</p>
+        </div>
+        <div class="glass p-6 rounded-2xl">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-md bg-[rgba(255,122,24,0.08)] flex items-center justify-center">🚀</div>
+            <div>
+              <div class="text-sm text-gray-300">Career-led</div>
+              <div class="font-semibold">Placement support</div>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm mt-4">Hiring partnerships and placement guidance to kickstart your telecom career.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COURSE DETAILS -->
+  <section id="course" class="py-16 lg:py-24 bg-[rgba(255,255,255,0.02)]">
+    <div class="container mx-auto px-6">
+      <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div>
+          <h3 class="text-2xl font-bold">Optical Fibre Splicer — Course outline</h3>
+          <p class="text-gray-300 mt-3">A compact, powerful program focused on fusion splicing, OTDR testing, cable handling and on-site installations.</p>
+
+          <ul class="mt-6 space-y-3 text-gray-300">
+            <li>• Fusion splicing fundamentals & calibration</li>
+            <li>• OTDR use & signature analysis</li>
+            <li>• Cable management, joints, closures & testing</li>
+            <li>• Safety, standards, and industry best practices</li>
+          </ul>
+
+          <div class="mt-6">
+            <a href="admission.html" class="inline-flex items-center gap-2 px-5 py-3 bg-[var(--accent1)] rounded-full font-semibold text-black">Apply Now</a>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="p-6 rounded-2xl glass">
+            <div class="text-sm text-gray-300">Course type</div>
+            <div class="font-semibold">Short-term intensive</div>
+          </div>
+          <div class="p-6 rounded-2xl glass">
+            <div class="text-sm text-gray-300">Who it's for</div>
+            <div class="font-semibold">Field technicians & new entrants</div>
+          </div>
+          <div class="p-6 rounded-2xl glass">
+            <div class="text-sm text-gray-300">Prerequisites</div>
+            <div class="font-semibold">Basic electrical/telecom familiarity</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-16 lg:py-24">
+    <div class="container mx-auto px-6">
+      <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div>
+          <h3 class="text-2xl font-bold">Get in touch</h3>
+          <p class="text-gray-300 mt-3">Questions about the course or admissions? Reach out and we'll respond within one business day.</p>
+
+          <div class="mt-6 space-y-4">
+            <div class="glass p-4 rounded-lg">
+              <div class="text-sm text-gray-400">Phone</div>
+              <a href="tel:7803871138" class="font-semibold text-white block">7803871138</a>
+            </div>
+            <div class="glass p-4 rounded-lg">
+              <div class="text-sm text-gray-400">Email</div>
+              <a href="mailto:affiluxa@gmail.com" class="font-semibold text-white block">affiluxa@gmail.com</a>
+            </div>
+            <div class="glass p-4 rounded-lg">
+              <div class="text-sm text-gray-400">Location</div>
+              <div class="font-semibold text-white">Muzaffarpur, Bihar, India</div>
+            </div>
+          </div>
+        </div>
+
+        <form class="glass p-6 rounded-2xl" onsubmit="handleSubmit(event)">
+          <label class="block text-sm text-gray-300">Full name</label>
+          <input required class="mt-2 w-full bg-transparent border border-[rgba(255,255,255,0.04)] rounded-lg px-4 py-2 text-white" placeholder="Your name" />
+
+          <label class="block text-sm text-gray-300 mt-4">Email</label>
+          <input required type="email" class="mt-2 w-full bg-transparent border border-[rgba(255,255,255,0.04)] rounded-lg px-4 py-2 text-white" placeholder="you@domain.com" />
+
+          <label class="block text-sm text-gray-300 mt-4">Message</label>
+          <textarea required class="mt-2 w-full bg-transparent border border-[rgba(255,255,255,0.04)] rounded-lg px-4 py-2 text-white" rows="4" placeholder="How can we help?"></textarea>
+
+          <div class="mt-4 flex justify-end">
+            <button type="submit" class="bg-[var(--accent2)] px-5 py-2 rounded-full text-black font-semibold">Send</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="py-8 text-gray-400">
+  <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="logo-mark"></div>
+      <div>
+        <div class="text-white font-semibold">AFFILUXA</div>
+        <div class="text-xs text-gray-400">Telecom Training</div>
+      </div>
+    </div>
+
+    <div class="text-sm">© <span id="year"></span> AFFILUXA. All rights reserved.</div>
+
+    <div class="flex items-center gap-4 text-sm text-gray-300">
+      <a href="#">About</a>
+      <a href="#course">Course</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+  </div>  <!-- Scripts: particles, tiny interactions -->  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // simple particle effect (lightweight)
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+
+    function rand(n){ return Math.random()*n; }
+    function initParticles(){ particles = []; for(let i=0;i<70;i++){ particles.push({ x: rand(W), y: rand(H), r:1+rand(2.5), vx:(rand(0.6)-0.3), vy:-0.15-rand(0.2), alpha:0.05+Math.random()*0.12 }); } }
+    initParticles();
+
+    function render(){ ctx.clearRect(0,0,W,H);
+      for(let p of particles){ p.x += p.vx; p.y += p.vy; p.alpha += (Math.random()-0.5)*0.02; if(p.alpha<0.02) p.alpha=0.02; if(p.alpha>0.25) p.alpha=0.25; if(p.y<-10) { p.y = H+10; p.x = rand(W); }
+        ctx.beginPath(); ctx.fillStyle = 'rgba(255,140,50,'+p.alpha+')'; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); }
+      requestAnimationFrame(render);
+    }
+    render();
+
+    // simple form handler (placeholder)
+    function handleSubmit(e){ e.preventDefault(); alert('Thanks! We\'ll get back to you shortly.'); e.target.reset(); }
+
+    // mobile menu toggle (basic)
+    const menuBtn = document.getElementById('menuBtn');
+    menuBtn?.addEventListener('click',()=>{ alert('Mobile menu: you can wire this up to your nav.') });
+  </script></body>
+</html>
