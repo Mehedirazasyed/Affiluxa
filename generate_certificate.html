@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Generate Certificate</title>
+
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-config.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+    }
+    header {
+        background: #003399;
+        color: white;
+        padding: 15px;
+        text-align: center;
+    }
+    .container {
+        width: 90%;
+        max-width: 600px;
+        background: #fff;
+        margin: 40px auto;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #0003;
+    }
+    label {
+        font-weight: bold;
+    }
+    input, select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0 20px 0;
+        border: 1px solid #999;
+        border-radius: 5px;
+    }
+    .btn {
+        background: #003399;
+        color: #fff;
+        padding: 10px 17px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background: #0055cc;
+    }
+</style>
+
+</head>
+<body>
+
+<header>
+    <h1>ADMIN – GENERATE CERTIFICATE</h1>
+</header>
+
+<div class="container">
+
+    <label>Student Name</label>
+    <input type="text" id="name" placeholder="Enter student name">
+
+    <label>Course</label>
+    <input type="text" id="course" placeholder="Enter course name">
+
+    <label>Issue Date</label>
+    <input type="date" id="date">
+
+    <button class="btn" onclick="generateCertificate()">Generate Certificate</button>
+</div>
+
+<script>
+// Function to create certificate ID
+function generateCertID() {
+    const prefix = "AFFILUXA-2025-";
+    const randomNum = Math.floor(100 + Math.random() * 900);  
+    return prefix + randomNum;
+}
+
+// Save certificate to Supabase
+async function generateCertificate() {
+    let name = document.getElementById("name").value.trim();
+    let course = document.getElementById("course").value.trim();
+    let date = document.getElementById("date").value;
+
+    if (!name || !course || !date) {
+        alert("Please fill all fields!");
+        return;
+    }
+
+    const certID = generateCertID();
+
+    const { data, error } = await supabase
+        .from("certificates")
+        .insert([
+            { cert_id: certID, name: name, course: course, issue_date: date, status: "Generated" }
+        ]);
+
+    if (error) {
+        console.error(error);
+        alert("Error generating certificate!");
+    } else {
+        alert("Certificate Generated! ID: " + certID);
+        location.href = "certificate-download.html?cert=" + certID;
+    }
+}
+</script>
+
+</body>
+</html>
