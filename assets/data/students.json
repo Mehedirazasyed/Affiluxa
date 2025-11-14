@@ -1,0 +1,18 @@
+[
+  {
+    "certificate_number": "AFFILUXA-2025-012",
+    "name": "Muhammad Raza",
+    "father_name": "Mr. XYZ",
+    "course": "FTTH Technician",
+    "dob": "2002-05-12",
+    "issued_date": "2025-01-20"
+  },
+  {
+    "certificate_number": "AFFILUXA-2025-013",
+    "name": "Amit Kumar",
+    "father_name": "Mr. Verma",
+    "course": "Splicer Training",
+    "dob": "1999-11-02",
+    "issued_date": "2025-01-22"
+  }
+]
