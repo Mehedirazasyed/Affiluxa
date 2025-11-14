@@ -1,175 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Verify Certificate — AFFILUXA</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AFFILUXA | Verify Certificate</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Rubik:wght@500;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css" />
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { orange: '#ff7a18', amber: '#ff9f43' }
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            display: ['Rubik', 'Inter']
-          }
+    <style>
+        body {
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
         }
-      }
-    }
-  </script>
-
-  <style>
-    :root{
-      --bg:#070707;
-      --card:#0f1114;
-      --accent1:#ff7a18;
-      --accent2:#ff9f43;
-      --muted:#a0acb7;
-    }
-    body{
-      background: radial-gradient(1200px 600px at 10% 20%, rgba(255,122,24,0.06), transparent 6%),
-                  radial-gradient(1000px 500px at 90% 90%, rgba(255,159,67,0.05), transparent 6%),
-                  var(--bg);
-      font-family: Inter, sans-serif;
-      color: #e6eef6;
-    }
-    .glass{
-      background: linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.05);
-      backdrop-filter: blur(10px) saturate(150%);
-    }
-  </style>
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid orange;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: none;
+            font-size: 16px;
+        }
+        input {
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+        }
+        button {
+            background: orange;
+            color: black;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        .valid {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 4px solid lime;
+        }
+        .invalid {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 4px solid red;
+        }
+    </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body>
 
-  <!-- NAV -->
-  <header class="w-full glass py-4 sticky top-0 z-20">
-    <div class="container mx-auto px-6 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent1)] to-[var(--accent2)]"></div>
-        <div>
-          <div class="text-white font-semibold">AFFILUXA</div>
-          <div class="text-[11px] text-gray-400 -mt-1">Telecom Training</div>
-        </div>
-      </a>
+<div class="container">
+    <h2 style="text-align:center; color:orange;">Verify Certificate</h2>
 
-      <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300">
-        <a href="index.html#about" class="hover:text-white">About</a>
-        <a href="index.html#course" class="hover:text-white">Course</a>
-        <a href="index.html#contact" class="hover:text-white">Contact</a>
-        <a href="verify.html" class="text-white font-semibold">Verify</a>
-      </nav>
+    <input type="text" id="cert_no" placeholder="Enter Certificate Number" />
 
-      <div class="flex items-center gap-3">
-        <a href="admission.html" class="px-4 py-2 rounded-full bg-gradient-to-r from-[var(--accent1)] to-[var(--accent2)] text-black font-medium">Apply</a>
-        <a href="login.html" class="px-4 py-2 rounded-full glass text-gray-200">Login</a>
-      </div>
-    </div>
-  </header>
+    <input type="date" id="dob" placeholder="Enter Date of Birth" />
 
-  <!-- MAIN -->
-  <main class="flex-1 container mx-auto px-6 py-20">
+    <button onclick="verifyCertificate()">Verify</button>
 
-    <div class="max-w-2xl mx-auto text-center">
-      <h1 class="text-4xl font-extrabold">Verify Certificate</h1>
-      <p class="text-gray-400 mt-3">
-        Enter the <span class="text-[var(--accent2)] font-semibold">Certificate ID</span> printed on your AFFILUXA certificate.
-      </p>
-    </div>
+    <div id="result" class="result"></div>
+</div>
 
-    <div class="max-w-xl mx-auto mt-12 glass p-8 rounded-2xl border border-[rgba(255,255,255,0.03)]">
-
-      <label class="block text-sm text-gray-300">Certificate ID</label>
-      <input id="certID"
-             class="mt-2 w-full bg-transparent border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-2 text-white"
-             placeholder="AFFI-2024-XXXXX" />
-
-      <button onclick="verifyCertificate()"
-              class="mt-5 w-full py-3 rounded-full bg-[var(--accent1)] text-black font-semibold hover:brightness-105 transition">
-        Verify Now
-      </button>
-
-      <!-- Loader -->
-      <div id="loader" class="hidden text-center mt-6">
-        <div class="animate-pulse text-[var(--accent2)]">Verifying...</div>
-      </div>
-
-      <!-- Result -->
-      <div id="result" class="mt-8 hidden"></div>
-    </div>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="py-6 text-gray-400 text-sm text-center">
-    © <span id="year"></span> AFFILUXA. All rights reserved.
-  </footer>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-  <script src="/assets/js/supabase-config.js"></script>
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    async function verifyCertificate() {
-      const id = document.getElementById("certID").value.trim();
-      const resultBox = document.getElementById("result");
-      const loader = document.getElementById("loader");
-
-      if (!id) {
-        alert("Please enter certificate ID");
-        return;
-      }
-
-      resultBox.classList.add("hidden");
-      loader.classList.remove("hidden");
-
-      // Query Supabase table: certificates
-      const { data, error } = await supabase
-        .from("certificates")
-        .select("*")
-        .eq("certificate_id", id)
-        .maybeSingle();
-
-      loader.classList.add("hidden");
-
-      if (error) {
-        resultBox.innerHTML = `
-          <div class="p-4 rounded-xl bg-red-900/40 border border-red-600/30 text-red-300">
-            Error checking certificate. Please try again later.
-          </div>`;
-        resultBox.classList.remove("hidden");
-        return;
-      }
-
-      if (!data) {
-        resultBox.innerHTML = `
-          <div class="p-4 rounded-xl bg-red-900/40 border border-red-600/30 text-red-300">
-            ❌ Certificate not found
-          </div>`;
-        resultBox.classList.remove("hidden");
-        return;
-      }
-
-      // If certificate is valid
-      resultBox.innerHTML = `
-        <div class="p-6 rounded-2xl bg-green-900/25 border border-green-500/30">
-          <h3 class="text-xl font-bold text-green-400">✔ Certificate Valid</h3>
-          <p class="mt-2 text-gray-300">Student Name: <strong>${data.name}</strong></p>
-          <p class="text-gray-300">Course: <strong>${data.course}</strong></p>
-          <p class="text-gray-300">Issued On: <strong>${data.issue_date}</strong></p>
-        </div>`;
-      resultBox.classList.remove("hidden");
-    }
-  </script>
-
+<script src="verify.js"></script>
 </body>
 </html>
