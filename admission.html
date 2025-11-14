@@ -1,170 +1,183 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AFFILUXA — Admission</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root{--accent1:#ff7a18;--accent2:#ff9f43;--bg:#070707;}
-    body{background:radial-gradient(1200px 600px at 8% 10%, rgba(255,122,24,0.06), transparent 6%), var(--bg); color:#e6eef6;}
-    .glass{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); backdrop-filter:blur(8px)}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admission Form - AFFILUXA</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-config.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: auto;
+            background: #111;
+            padding: 25px;
+            margin-top: 30px;
+            border-radius: 10px;
+            border: 2px solid orange;
+            box-shadow: 0 0 20px orange;
+        }
+
+        h2 {
+            text-align: center;
+            color: orange;
+            margin-bottom: 20px;
+        }
+
+        label {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid orange;
+            background: #000;
+            color: white;
+        }
+
+        textarea {
+            height: 80px;
+        }
+
+        button {
+            width: 100%;
+            background: orange;
+            padding: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ff9800;
+        }
+
+        #msg {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+
 </head>
-<body class="min-h-screen flex items-center justify-center p-6">
-  <div class="max-w-xl w-full glass p-6 rounded-2xl shadow-lg">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h1 class="text-2xl font-bold">Admission — AFFILUXA</h1>
-        <p class="text-sm text-gray-300">Auto-generate certificate & export JSON (upload to GitHub)</p>
-      </div>
-      <div class="text-sm text-gray-400">Download on submit</div>
-    </div>
+<body>
 
-    <form id="form" class="space-y-3">
-      <div>
-        <label class="text-sm text-gray-300">Full name</label>
-        <input id="name" required class="w-full mt-1 px-3 py-2 rounded bg-transparent border border-[rgba(255,255,255,0.04)]" />
-      </div>
+<div class="container">
+    <h2>Admission Form</h2>
 
-      <div>
-        <label class="text-sm text-gray-300">Email</label>
-        <input id="email" type="email" required class="w-full mt-1 px-3 py-2 rounded bg-transparent border border-[rgba(255,255,255,0.04)]" />
-      </div>
+    <label>Full Name</label>
+    <input type="text" id="full_name" placeholder="Enter full name">
 
-      <div>
-        <label class="text-sm text-gray-300">Phone</label>
-        <input id="phone" required class="w-full mt-1 px-3 py-2 rounded bg-transparent border border-[rgba(255,255,255,0.04)]" />
-      </div>
+    <label>Father's Name</label>
+    <input type="text" id="father_name" placeholder="Enter father's name">
 
-      <div>
-        <label class="text-sm text-gray-300">Course</label>
-        <select id="course" required class="w-full mt-1 px-3 py-2 rounded bg-transparent border border-[rgba(255,255,255,0.04)]">
-          <option value="">Select course</option>
-          <option>Optical Fibre Splicer</option>
-          <option>FTTH Installation</option>
-          <option>Telecom Maintenance</option>
-        </select>
-      </div>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter email">
 
-      <div>
-        <label class="text-sm text-gray-300">Date of Admission</label>
-        <input id="date" type="date" required class="w-full mt-1 px-3 py-2 rounded bg-transparent border border-[rgba(255,255,255,0.04)]" />
-      </div>
+    <label>Phone</label>
+    <input type="text" id="phone" placeholder="Enter phone number">
 
-      <div class="flex gap-2">
-        <button type="submit" class="flex-1 bg-[var(--accent1)] text-black font-semibold py-2 rounded">Submit & Download JSON</button>
-        <button id="clearAll" type="button" class="px-4 py-2 rounded border border-[rgba(255,255,255,0.06)]">Clear</button>
-      </div>
-    </form>
+    <label>Address</label>
+    <textarea id="address" placeholder="Enter full address"></textarea>
 
-    <div id="notice" class="mt-4 text-sm text-green-400 hidden"></div>
+    <label>Course</label>
+    <select id="course">
+        <option value="Computer Course">Computer Course</option>
+        <option value="Tally Course">Tally Course</option>
+        <option value="MS Office">MS Office</option>
+        <option value="Typing Course">Typing Course</option>
+    </select>
 
-    <hr class="my-4 border-[rgba(255,255,255,0.03)]"/>
+    <label>Batch (Optional)</label>
+    <input type="text" id="batch" placeholder="Example: Morning Batch">
 
-    <div>
-      <h3 class="text-sm font-semibold mb-2">Local preview (saved entries)</h3>
-      <div id="preview" class="text-sm text-gray-300 max-h-48 overflow-auto"></div>
-    </div>
-  </div>
+    <button onclick="submitAdmission()">Submit Admission</button>
 
-  <script>
-    // Storage key
-    const KEY = 'affiluxa_students';
+    <p id="msg"></p>
+</div>
 
-    // Helpers
-    function readAll(){ return JSON.parse(localStorage.getItem(KEY) || '[]'); }
-    function writeAll(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+<script>
+async function submitAdmission() {
+    const msg = document.getElementById("msg");
 
-    // Format next certificate like AFFILUXA-0001
-    function nextCertificateNumber(arr){
-      // derive next from length or existing max
-      if(!arr || arr.length===0) return 'AFFILUXA-0001';
-      // find max index by parsing existing numbers
-      let max = 0;
-      arr.forEach(s=>{
-        const m = (s.certificateNo || '').match(/AFFILUXA-(\d+)/);
-        if(m) max = Math.max(max, parseInt(m[1],10));
-      });
-      const next = (max || arr.length) + 1;
-      return 'AFFILUXA-' + String(next).padStart(4,'0');
+    // Check if user logged in
+    const user_id = localStorage.getItem("user_id");
+    if (!user_id) {
+        msg.style.color = "red";
+        msg.innerText = "You must log in first!";
+        return;
     }
 
-    function renderPreview(){
-      const preview = document.getElementById('preview');
-      const arr = readAll();
-      if(arr.length===0){ preview.innerHTML = '<div class="text-gray-500">No records yet.</div>'; return; }
-      preview.innerHTML = arr.slice().reverse().map(s=>`
-        <div class="p-2 mb-2 rounded bg-[rgba(255,255,255,0.01)] border border-[rgba(255,255,255,0.02)]">
-          <div class="font-semibold">${s.name} — <span class="text-[var(--accent2)]">${s.certificateNo}</span></div>
-          <div class="text-xs text-gray-400">${s.course} • ${s.date} • ${s.email}</div>
-        </div>
-      `).join('');
+    // Collect values
+    const full_name = document.getElementById("full_name").value.trim();
+    const father_name = document.getElementById("father_name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+    const course = document.getElementById("course").value;
+    const batch = document.getElementById("batch").value.trim();
+
+    if (!full_name || !email || !phone || !address || !course) {
+        msg.style.color = "red";
+        msg.innerText = "All fields except Batch are required.";
+        return;
     }
 
-    // download file (automatically triggered)
-    function downloadJSON(arr){
-      const blob = new Blob([JSON.stringify(arr, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'certificates.json';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+    // Insert into Supabase students table
+    const { data, error } = await supabase
+        .from("students")
+        .insert([
+            {
+                user_id,
+                full_name,
+                father_name,
+                email,
+                phone,
+                address,
+                course,
+                batch
+            }
+        ]);
+
+    if (error) {
+        msg.style.color = "red";
+        msg.innerText = "Error submitting form!";
+        console.log(error);
+        return;
     }
 
-    // init
-    renderPreview();
+    msg.style.color = "lime";
+    msg.innerText = "Admission submitted successfully!";
 
-    document.getElementById('form').addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const course = document.getElementById('course').value;
-      const date = document.getElementById('date').value;
+    // Clear form
+    document.getElementById("full_name").value = "";
+    document.getElementById("father_name").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("address").value = "";
+    document.getElementById("batch").value = "";
 
-      if(!name || !email || !phone || !course || !date) return;
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 1500);
+}
+</script>
 
-      const arr = readAll();
-      const certNo = nextCertificateNumber(arr);
-
-      const student = {
-        certificateNo: certNo,
-        name,
-        email,
-        phone,
-        course,
-        date
-      };
-
-      arr.push(student);
-      writeAll(arr);
-      renderPreview();
-
-      // show notice
-      const notice = document.getElementById('notice');
-      notice.classList.remove('hidden');
-      notice.textContent = `Saved locally. Certificate: ${certNo} — certificates.json will be downloaded.`;
-
-      // auto-download
-      downloadJSON(arr);
-
-      // reset form
-      e.target.reset();
-    });
-
-    document.getElementById('clearAll').addEventListener('click', ()=>{
-      if(!confirm('Clear all local records? This will not delete the file on GitHub.')) return;
-      localStorage.removeItem(KEY);
-      renderPreview();
-      document.getElementById('notice').classList.add('hidden');
-    });
-
-    // ensure preview updates when page is opened and when storage changes (helpful if multiple tabs)
-    window.addEventListener('storage', renderPreview);
-  </script>
 </body>
 </html>
