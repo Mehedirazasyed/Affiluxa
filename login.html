@@ -16,7 +16,6 @@
             background: #000;
             font-family: Arial, sans-serif;
         }
-
         .container {
             width: 100%;
             height: 100vh;
@@ -24,7 +23,6 @@
             justify-content: center;
             align-items: center;
         }
-
         .login-box {
             width: 350px;
             background: #111;
@@ -33,18 +31,15 @@
             border: 2px solid orange;
             box-shadow: 0 0 15px orange;
         }
-
         h2 {
             text-align: center;
             color: orange;
             margin-bottom: 20px;
         }
-
         label {
             color: #fff;
             font-size: 14px;
         }
-
         input {
             width: 100%;
             padding: 12px;
@@ -55,7 +50,6 @@
             background: #000;
             color: #fff;
         }
-
         button {
             width: 100%;
             padding: 12px;
@@ -66,16 +60,13 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         button:hover {
             background: #ff9800;
         }
-
         p {
             text-align: center;
             color: #fff;
         }
-
         a {
             color: orange;
             text-decoration: none;
@@ -83,21 +74,15 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="login-box">
             <h2>Login</h2>
-
             <label>Email</label>
             <input type="email" id="email" placeholder="Enter your email" required>
-
             <label>Password</label>
             <input type="password" id="password" placeholder="Enter your password" required>
-
             <button onclick="loginUser()">Login</button>
-
             <p>Don't have an account? <a href="register.html">Register</a></p>
-
             <p id="msg" style="color:red; text-align:center; margin-top:10px;"></p>
         </div>
     </div>
@@ -107,7 +92,6 @@ async function loginUser() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
     const msg = document.getElementById("msg");
-
     msg.innerText = "";
 
     if (!email || !password) {
@@ -115,28 +99,39 @@ async function loginUser() {
         return;
     }
 
-    // Check in Supabase "users" table
-    const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email)
-        .eq("password", password) // Plain password check (change to hashed later)
-        .single();
+    // Supabase secure sign-in
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error || !data) {
+    if (error) {
         msg.innerText = "Invalid email or password!";
         return;
     }
 
-    // Save login info locally
-    localStorage.setItem("user_id", data.id);
-    localStorage.setItem("user_role", data.role);
+    // Get user metadata, such as role, from 'profiles' table (if you store roles there)
+    // Here we assume you have a 'profiles' table keyed by user id
+    let userRole = "user";
+    try {
+        const { data: profileData, error: profileError } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", data.user.id)
+            .single();
+
+        if (!profileError && profileData && profileData.role) {
+            userRole = profileData.role;
+        }
+    } catch (err) {
+        // fallback to "user"
+    }
+
+    localStorage.setItem("user_id", data.user.id);
+    localStorage.setItem("user_role", userRole);
 
     msg.style.color = "lime";
     msg.innerText = "Login successful! Redirecting...";
 
     setTimeout(() => {
-        if (data.role === "admin") {
+        if (userRole === "admin") {
             window.location.href = "admin.html";
         } else {
             window.location.href = "index.html";
@@ -144,6 +139,5 @@ async function loginUser() {
     }, 1200);
 }
 </script>
-
 </body>
 </html>
